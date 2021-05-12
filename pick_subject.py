@@ -3,7 +3,7 @@ import random
 import pickle
 import student_class
 
-def pick(remain_subject, NOSJ, NOSD, NOB, Student, save = False):
+def pick(remain_subject, NOSJ, NOSD, NOB, Student):
     tryCount = 0
     rs_ = [0] * len(remain_subject)
     for i in range(len(remain_subject)):
@@ -12,7 +12,7 @@ def pick(remain_subject, NOSJ, NOSD, NOB, Student, save = False):
             rs_[i] += j[1]  # rs_는 과목당 듣는 학생수, (분반) * (분반당 학생수)의 총합
     while True:
         tryCount += 1
-        switch = True
+        flag = True
         students = []
         rs = copy.deepcopy(rs_)  # rs는 과목 배정을 위한 것, deepcopy는 변수간 영향 x
         for n in range(NOSD):
@@ -38,15 +38,16 @@ def pick(remain_subject, NOSJ, NOSD, NOB, Student, save = False):
                 print(choosed_block)
                 print(choosed_subject)
                 print('=' * 100)
-                switch = False
+                flag = False
                 break
             students.append(Student(choosed_subject))
-            if not switch: break
-        if switch: break
-    if save:
-        with open('students.txt', 'wb') as f:
-            pickle.dump(students, f)
+            if not flag: break
+        if flag: break
     return students
+
+def save_file(file_name, data):
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f)
 
 
 def apply(remain_subject, students, NOSD, time = 30):
@@ -93,6 +94,7 @@ if __name__ == '__main__':
 
     remain_subject[0] = {1: [4, NOSD], 2: [5, NOSD]}  # 공강 조정
     print(remain_subject)
-    temp = pick(remain_subject, NOSJ, NOSD, NOB, student_class.Student, save = True)
+    temp = pick(remain_subject, NOSJ, NOSD, NOB, student_class.Student)
+    save_file('students.txt', temp)
     for i in temp:
         print(i.subject)

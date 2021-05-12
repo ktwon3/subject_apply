@@ -38,22 +38,10 @@ if __name__ == '__main__':
     with open('students.txt', 'rb') as f:
         students = pickle.load(f)
 
-
-
-    # a = students
-    # for i in range(len(a)):
-    #     if len(a[i].subject) != 0:
-    #         print(i,a[i].subject)
-
-
     c = [0,0]
-
-
-
     r = copy.deepcopy(remain_subject)
     a = pick_subject.apply(r, students, NOSD, 30)
 
-    print()
     b = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
     for i in range(len(a)):
         b[len(a[i].keys())] += 1
