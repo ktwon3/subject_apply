@@ -15,9 +15,9 @@ def check_applying_result(a):
 def set_remain_subject(sub_block):
     remain_subject = []
 
-    for i in range(len(subject_block)):
+    for i in range(len(sub_block)):
         temp = {}
-        nums = subject_block[i].split()  # nums : subject_block의 각각의 숫자 분리
+        nums = sub_block[i].split()  # nums : subject_block의 각각의 숫자 분리
         for i in range(len(nums)):
             temp[i + 1] = [int(nums[i]) - 1, SPC]
         remain_subject.append(temp)

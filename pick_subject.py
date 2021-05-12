@@ -36,10 +36,10 @@ def pick(remain_subject, NOSJ, NOSD, NOB, Student):
                 if len(choosed_subject) >= 6: break
             if len(choosed_subject) != NOB:
                 if n >= 200 : print(str(tryCount) + '번째 시도: ' + str(n) + '번째 학생 실패')
-                print(rs)
+                """print(rs)
                 print(choosed_block)
                 print(choosed_subject)
-                print('=' * 100)
+                print('=' * 100)"""
                 flag = False
                 break
             students.append(Student(choosed_subject))
