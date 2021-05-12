@@ -4,6 +4,8 @@ import pickle
 import student_class
 
 def pick(remain_subject, NOSJ, NOSD, NOB, Student):
+    # return : 학생이 듣는 과목을 Student 인스턴스로 만들어 리스트의 인덱스에 맞추어 저장
+
     tryCount = 0
     rs_ = [0] * len(remain_subject)
     for i in range(len(remain_subject)):
@@ -82,19 +84,10 @@ if __name__ == '__main__':
     with open("subject_block.txt", "r") as f:
         subject_block = f.read().splitlines()  # subject_block : 한 과목이 어떤 블록에 해당되는지 정리
 
-    remain_subject = []
-    # remain_subject : 과목에 따른 남은 학생수, 한 딕셔너리 안에 하나의 과목, key는 분반, value는 [블럭, 남은 인원 수]
+    remain_subject = student_class.set_remain_subject(subject_block)
 
-    for i in range(len(subject_block)):
-        temp = {}
-        nums = subject_block[i].split()  # nums : subject_block의 각각의 숫자 분리
-        for i in range(len(nums)):
-            temp[i+1] = [int(nums[i]) - 1, SPC]
-        remain_subject.append(temp)
-
-    remain_subject[0] = {1: [4, NOSD], 2: [5, NOSD]}  # 공강 조정
-    print(remain_subject)
     temp = pick(remain_subject, NOSJ, NOSD, NOB, student_class.Student)
-    save_file('students.txt', temp)
+    if input('저장하시겠습니까? (Y/N)') == 'Y' : save_file('students.txt', temp)
+
     for i in temp:
         print(i.subject)
