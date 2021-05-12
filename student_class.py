@@ -45,8 +45,6 @@ if __name__ == '__main__':
     #     if len(a[i].subject) != 0:
     #         print(i,a[i].subject)
 
-    print(remain_subject)
-    print('=' * 100)
 
     c = [0,0]
 
