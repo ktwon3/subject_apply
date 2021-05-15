@@ -1,6 +1,7 @@
 import copy, random
 import student_class, utill
 
+
 def pick(re_sub, NOSJ, NOSD, NOB, Student):
     # return : 학생이 듣는 과목을 Student 인스턴스로 만들어 리스트의 인덱스에 맞추어 저장
     try_count = 0
@@ -18,31 +19,37 @@ def pick(re_sub, NOSJ, NOSD, NOB, Student):
         for n in range(NOSD):
             choosed_subject = []
             choosed_block = []  # 블럭을 고려해줘야 구조적으로 불가능한 시간표가 나오지 않음, 다만 배정시 고려는 x
-            s = [i for i in range(NOSJ)]  # s는 과목 번호
+            s = [i for i in range(1,NOSJ)]  # s는 과목 번호
             random.shuffle(s)
             for i in s:
                 if rs[i] <= 0:
                     continue
                 else:
                     for j in re_sub_copyed[i].keys():
-                        if re_sub_copyed[i][j][0] in choosed_block and re_sub_copyed[i][j][1] <= 0: continue
+                        if re_sub_copyed[i][j][0] in choosed_block or re_sub_copyed[i][j][1] <= 0: continue
                         else:
                             choosed_subject.append(i)
                             choosed_block.append(re_sub_copyed[i][j][0])
+                            choosed_block = utill.add_overlab_block(re_sub_copyed[i][j][0], choosed_block)
                             rs[i] -= 1
                             re_sub_copyed[i][j][1] -= 1
                             break
-                if len(choosed_subject) >= 6:
+                if len(choosed_subject) >= NOB:
                     break
-            if len(choosed_subject) != NOB:
-                #if n >= 200: print(str(try_count) + '번째 시도: ' + str(n) + '번째 학생 실패')
-                """print(rs)
-                print(choosed_block)
-                print(choosed_subject)
-                print('=' * 100)"""
+
+
+            if len(choosed_subject) < NOB - 1:
+                # if n >= 200:
+                #     print(str(try_count) + '번째 시도: ' + str(n) + '번째 학생 실패')
+                #    print(rs)
+                #     print(choosed_block)
+                #     print(len(choosed_subject))
+                #     print('=' * 100)
                 flag = False
                 # return n
                 break
+            elif len(choosed_subject) == NOB - 1:
+                 choosed_subject.append(0)
             students.append(Student(choosed_subject))
             if not flag: break
         if flag: break
@@ -51,7 +58,7 @@ def pick(re_sub, NOSJ, NOSD, NOB, Student):
 
 
 
-def check_pick(stu, NOSJ):
+def check_pick(stu, NOSJ):  # 각 과목 신청자수 리스트로 반환
     result = [0 for i in range(NOSJ)]
     for s in stu:
         for j in s.subject:
@@ -66,6 +73,19 @@ def check_pick_time(re_sub, NOSJ, NOSD, NOB, Student, n):
         avr += t
     return avr / n
 
+def limit_track(r_b):
+    unit_4 = [1,2,3,4,5,6,7,8]
+    unit_2 = [9,10,11,12,13]
+    count_4, count_2 = 0, 0
+    result = set(r_b)
+    for i in r_b:
+        if i in unit_4: count_4 += 1
+        if i in unit_2: count_2 += 1
+        if count_4 == 7:
+            result.union(set(unit_4))
+        if count_2 == 3:
+            result.union(set(unit_2))
+    return list(result)
 
 
 
@@ -85,22 +105,3 @@ if __name__ == '__main__':
     print(check_pick(temp, NOSJ))
 
 
-    # for i in range(1000):
-    #     r = copy.deepcopy((remain_subject))
-    #     temp = pick(r, NOSJ, NOSD, NOB, student_class.Student)
-    #     if str(type(temp)) == "<class 'int'>":
-    #         sum_count += temp
-    #     else:
-    #         print(temp)
-    #         break
-    # if i == 999: print(sum_count / 1000)
-    #
-    # else :
-    #     for t in temp:
-    #         print(t.subject)
-    #     print(i)
-
-    # if input('저장하시겠습니까? (Y/N)') == 'Y' : save_file('students.txt', temp)
-    #
-    # for t in temp:
-    #     print(t.subject)
