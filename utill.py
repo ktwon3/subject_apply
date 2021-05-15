@@ -15,7 +15,7 @@ def set_remain_subject():
                 temp[j + 1] = [int(nums[j]) - 1, SPC]
         re_sub.append(temp)
 
-    #  re_sub[0] = {5: [4, 200], 6: [5, 400]}  # 공강 조정, 어떻게 조정해야 할지 더 찾아봐야 함
+    #re_sub[0] = {5: [4, 200], 6: [5, 400]}  # 공강 조정, 어떻게 조정해야 할지 더 찾아봐야 함
     print(re_sub)
     return re_sub
 
@@ -24,8 +24,7 @@ def save_file(file_name, data):
     with open(file_name, 'wb') as f:
         pickle.dump(data, f)
 
-
-def add_overlab_block(b, choosed_b):
+def add_overlab_block(b,choosed_b):
     if b == 7:
         if 10 not in choosed_b: choosed_b.append(10)
         if 12 not in choosed_b: choosed_b.append(12)
@@ -37,6 +36,7 @@ def add_overlab_block(b, choosed_b):
     elif (b == 11 or b == 13) and 8 not in choosed_b:
         choosed_b.append(8)
     return choosed_b
+
 
 
 SPC = 26  # student per class, 분반당 학생수, 현재는 21로 고정

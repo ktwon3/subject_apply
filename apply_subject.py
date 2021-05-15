@@ -28,7 +28,6 @@ def apply(remain_subject, students, NOSD, nob, time = 30):
 
     return result
 
-
 def check_applying_result(a, nob):  # apply 이후 신청 성공한 블럭 블럭 몇갠지 return
     b = {}
     for i in range(1, nob + 1):
@@ -36,7 +35,6 @@ def check_applying_result(a, nob):  # apply 이후 신청 성공한 블럭 블�
     for i in range(len(a)):
         b[len(a[i].keys())] += 1
     return b
-
 
 def find_block_student(resul,bloc_num):
     r = []
