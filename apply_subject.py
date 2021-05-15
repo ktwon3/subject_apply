@@ -3,45 +3,50 @@ import copy
 import utill
 import pickle
 
-def apply(remain_subject, students, NOSD, nob, time = 30):
-    students_num = [i for i in range(len(students))]
-    result = [{} for _ in range(NOSD)]
+
+def apply(re_sub, stud, nosd, nob, time=30):
+    students_num = [i for i in range(len(stud))]
+    result_ = [{} for _ in range(nosd)]
     for _ in range(time):  # 1차에서는 time = 30으로도 충분한 것 같음
         random.shuffle(students_num)
         for num in students_num:
-            c_b = list(result[num].keys())
-            choosed_block = copy.deepcopy(c_b)
+            c_b = list(result_[num].keys())
+            chose_block = copy.deepcopy(c_b)
             for i in c_b:
-                choosed_block = utill.add_overlab_block(i, c_b)
-            if len(choosed_block) == nob : continue
-            r = random.randrange(len(students[num].subject))
-            sub = students[num].subject[r]
-            class_list = list(remain_subject[sub].keys())  # 분반 리스트
+                chose_block = utill.add_overlap_block(i, c_b)
+            if len(chose_block) == nob:
+                continue
+            ran = random.randrange(len(stud[num].subject))
+            sub = stud[num].subject[ran]
+            class_list = list(re_sub[sub].keys())  # 분반 리스트
             c = copy.deepcopy(class_list)
             for i in c:
-                if remain_subject[sub][i][0] in choosed_block or remain_subject[sub][i][1] <= 0:
-                        class_list.remove(i)
-            if len(class_list) > 0 :
+                if re_sub[sub][i][0] in chose_block or re_sub[sub][i][1] <= 0:
+                    class_list.remove(i)
+            if len(class_list) > 0:
                 r2 = random.choice(class_list)
-                result[num][remain_subject[sub][r2][0]] = [sub, r2]  # {블럭 : [과목, 분반]}, 각 인덱스는 학생
-                remain_subject[sub][r2][1] -= 1
+                result_[num][re_sub[sub][r2][0]] = [sub, r2]  # {블럭 : [과목, 분반]}, 각 인덱스는 학생
+                re_sub[sub][r2][1] -= 1
 
-    return result
+    return result_
+
 
 def check_applying_result(a, nob):  # apply 이후 신청 성공한 블럭 블럭 몇갠지 return
     b = {}
-    for i in range(1, nob + 1):
+    for i in range(nob + 1):
         b[i] = 0
     for i in range(len(a)):
         b[len(a[i].keys())] += 1
     return b
 
-def find_block_student(resul,bloc_num):
-    r = []
+
+def find_block_student(resul, bloc_num):
+    r_ = []
     for i in range(len(resul)):
         if bloc_num == len(resul[i].keys()):
-            r.append(i)
-    return r
+            r_.append(i)
+    return r_
+
 
 if __name__ == '__main__':
     SPC = utill.SPC  # student per class, 분반당 학생수, 현재는 21로 고정

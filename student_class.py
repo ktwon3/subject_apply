@@ -4,12 +4,3 @@ class Student:
 
     def print_sub(self):
         print(self.subject)
-
-
-
-
-
-
-
-
-
