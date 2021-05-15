@@ -92,7 +92,7 @@ if __name__ == '__main__':
         remain_subject.append(temp)
 
     remain_subject[0] = {1: [4, NOSD], 2: [5, NOSD]}  # 공강 조정
-    print(remain_subject)
     temp = pick(remain_subject, NOSJ, NOSD, NOB, student_class.Student, save = True)
+    print(remain_subject)
     for i in temp:
         print(i.subject)
