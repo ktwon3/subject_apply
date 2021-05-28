@@ -4,7 +4,8 @@ import utill
 import pickle
 
 
-def apply(re_sub, stud, nosd, nob, time=30):
+def apply(remain_sub, stud, nosd, nob, time=30):
+    re_sub = copy.deepcopy(remain_sub)
     students_num = [i for i in range(len(stud))]
     result_ = [{} for _ in range(nosd)]
     for _ in range(time):  # 1차에서는 time = 30으로도 충분한 것 같음
@@ -12,10 +13,11 @@ def apply(re_sub, stud, nosd, nob, time=30):
         for num in students_num:
             c_b = list(result_[num].keys())
             chose_block = copy.deepcopy(c_b)
-            for i in c_b:
-                chose_block = utill.add_overlap_block(i, c_b)
             if len(chose_block) == nob:
                 continue
+            for i in c_b:
+                chose_block = utill.add_overlap_block(i, c_b)
+
             ran = random.randrange(len(stud[num].subject))
             sub = stud[num].subject[ran]
             class_list = list(re_sub[sub].keys())  # 분반 리스트
@@ -48,6 +50,40 @@ def find_block_student(resul, bloc_num):
     return r_
 
 
+def repeat_find_block_student(bloc_num, time, remain_subject, students):
+    r = [0] * NOSD
+    for _ in range(time):
+        result = apply(remain_subject, students, NOSD, NOB, 30)
+
+        # checked_dic = check_applying_result(result, NOB)
+        # print(checked_dic)
+        f_ = find_block_student(result, bloc_num)
+        for n in f_:
+            r[n] += 1
+        if _ % (time/10) == 0: print('@', end = '')
+    print()
+    return r
+
+
+def find_repeating_max(bloc_num, time, remain_subject, students):
+    l = repeat_find_block_student(bloc_num, time, remain_subject, students)
+    x, n = max(l), min(l)
+    result = {'max': [], 'min': [], 'num': (x,n)}
+    result['max'] = [i for i, value in enumerate(l) if value == x]
+    result['min'] = [i for i, value in enumerate(l) if value == n]
+    return result
+
+
+def frm_print(block_num, time, remain_subject, students):
+    r = find_repeating_max(block_num, time, remain_subject, students)
+    print('최댓값 :', r['num'][0])
+    for i in r['max']:
+        print(str(i) + '학생 :', students[i].print_sub())
+    print('최솟밗 :', r['num'][1])
+    for i in r['min']:
+        print(str(i) + '학생 :', students[i].print_sub())
+
+
 if __name__ == '__main__':
     SPC = utill.SPC  # student per class, 분반당 학생수, 현재는 21로 고정
     NOSD = utill.NOSD  # Number Of StuDent, 총 학생수
@@ -59,8 +95,10 @@ if __name__ == '__main__':
     with open('students.txt', 'rb') as f:
         students = pickle.load(f)
 
-    r = copy.deepcopy(remain_subject)
-    result = apply(r, students, NOSD, 1000)
-
+    result = apply(remain_subject, students, NOSD, NOB, 100)
     checked_dic = check_applying_result(result, NOB)
-    print(checked_dic)
+    # print(checked_dic)
+    # print(result)
+
+    # print(repeat_find_block_student(9,100))
+    frm_print(9, 10, remain_subject, students)

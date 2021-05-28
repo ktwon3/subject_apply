@@ -1,4 +1,5 @@
 import pickle
+import copy
 
 
 def set_remain_subject():
@@ -25,7 +26,8 @@ def save_file(file_name, data):
         pickle.dump(data, f)
 
 
-def add_overlap_block(b, chose_b):
+def add_overlap_block(b, cb):
+    chose_b = copy.deepcopy(cb)
     if b == 7:
         if 10 not in chose_b: chose_b.append(10)
         if 12 not in chose_b: chose_b.append(12)
@@ -39,7 +41,28 @@ def add_overlap_block(b, chose_b):
     return chose_b
 
 
-SPC = 26  # student per class, 분반당 학생수, 현재는 21로 고정
+def label_sub(sub_list):
+    compare_dic = {}
+
+    with open('sub__name.txt', 'r', encoding='UTF8') as f:
+        raw = f.read().splitlines()
+
+    for s in raw:
+        for i in s.split('\t'):
+            num = int(i.split('.')[0])
+            try : compare_dic[num] = i.split('.')[1].strip()
+            except:
+                print(i)
+                raise Exception(IndexError)
+
+    return_dic = {}
+    for s in sub_list:
+        return_dic[s] = compare_dic[s]
+    return return_dic
+
+
+
+SPC = 24  # student per class, 분반당 학생수, 현재는 24로 고정
 NOSD = 204  # Number Of StuDent, 총 학생수
-NOB = 10  # Number Of Block, 블럭 개수
+NOB = 10  # Number Of Block, 수강 신청을 해야하는 블럭 개수
 NOSJ = 40  # Number Of SubJect, 공강을 합친 과목 수

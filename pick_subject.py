@@ -17,6 +17,8 @@ def pick(re_sub, nosj, nosd, nob, student):
         rs = copy.deepcopy(rs_)  # rs는 과목 배정을 위한 것, deepcopy는 변수간 영향 x
         re_sub_copyed = copy.deepcopy(re_sub)
         for n in range(nosd):
+            if n == 150:
+                print()
             chose_subject = []
             chose_block = []  # 블럭을 고려해줘야 구조적으로 불가능한 시간표가 나오지 않음, 다만 배정시 고려는 x
             s = [i for i in range(1, nosj)]  # s는 과목 번호
@@ -26,9 +28,10 @@ def pick(re_sub, nosj, nosd, nob, student):
                     continue
                 else:
                     for j in re_sub_copyed[i].keys():
-                        if re_sub_copyed[i][j][0] in chose_block or re_sub_copyed[i][j][1] <= 0: continue
+                        if re_sub_copyed[i][j][0] in chose_block or re_sub_copyed[i][j][1] <= 0 or check_overlab_research(i): continue
                         else:
                             chose_subject.append(i)
+
                             chose_block.append(re_sub_copyed[i][j][0])
                             chose_block = utill.add_overlap_block(re_sub_copyed[i][j][0], chose_block)
                             rs[i] -= 1
@@ -38,12 +41,13 @@ def pick(re_sub, nosj, nosd, nob, student):
                     break
 
             if len(chose_subject) < nob - 1:
-                # if n >= 200:
-                #     print(str(try_count) + '번째 시도: ' + str(n) + '번째 학생 실패')
-                #    print(rs)
-                #     print(chose_block)
-                #     print(len(chose_subject))
-                #     print('=' * 100)
+                if n >= 100:
+                    print(str(try_count) + '번째 시도: ' + str(n) + '번째 학생 실패')
+                    #print(rs)
+                    print(chose_block)
+                    print(utill.label_sub(chose_subject))
+                    #print(len(chose_subject))
+                    print('=' * 100)
                 flag = False
                 # return n
                 break
@@ -88,6 +92,11 @@ def limit_track(r_b):
         if count_2 == 3:
             result.union(set(unit_2))
     return list(result)
+
+def check_overlab_research(b): # 과제연구가 있을시 True, 과제연구 중복 고려
+    research_list = [i for i in range(31, 37)]
+    if b in research_list: return True
+    else: return False
 
 
 if __name__ == '__main__':
