@@ -61,6 +61,36 @@ def label_sub(sub_list):
     return return_dic
 
 
+def print_remain_sub(rs):
+    l = [i for i in range(len(rs))]
+    d = label_sub(l)
+    for i in range(len(rs)):
+        for j in rs[i].values():
+            print(d[i], str(j[0]) + '블럭', str(j[1]) + '명')
+
+
+def set_remain_block(rs):
+    dic = {i: [] for i in range(1, 14)}  # 13 : 총 블록 수
+    for subject_count in range(len(rs)):
+        for class_num in rs[subject_count].keys():
+            block_num, remain_student = rs[subject_count][class_num][0], rs[subject_count][class_num][1]
+            dic[block_num].append({'subject': subject_count, 'class_num': class_num, 'remain_student': remain_student})
+
+    return dic
+
+
+def print_remain_block(rs):
+    rb = set_remain_block(rs)
+    print('=' * 10 + 'remain_block' + '=' * 10)
+    for block in rb.keys():
+        print('%d블럭' % block)
+        for sub_dic in rb[block]:
+            temp = label_sub([sub_dic['subject']])
+            subject = temp[sub_dic['subject']]
+            print(subject, end = '  ')
+            print(str(sub_dic['class_num']) + '반  ' + str(sub_dic['remain_student']) + '명')
+        print('\n')
+
 
 SPC = 24  # student per class, 분반당 학생수, 현재는 24로 고정
 NOSD = 204  # Number Of StuDent, 총 학생수
