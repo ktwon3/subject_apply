@@ -1,5 +1,43 @@
-import copy, random, time
+import copy, random
 import student_class, utill
+
+
+def pick_onetime(re_sub, nosj, nosd, nob, student):
+    students = []
+    re_sub_copyed = copy.deepcopy(re_sub)
+    remain_block = utill.set_remain_block(re_sub_copyed)
+    for n in range(nosd):
+        track = 0  # 0 : track 미정 1 : 4단위 7블럭 2 : 2단위 3블럭
+        chose_subject = []
+        chose_block = []  # 블럭을 고려해줘야 구조적으로 불가능한 시간표가 나오지 않음, 다만 배정시 고려는 x
+        b = [i for i in range(1, 14)]  # b는 블록 번호
+        random.shuffle(b)
+        for i in b:
+
+            random.shuffle(remain_block[i])
+            for dic in remain_block[i]:
+                if dic['subject'] in chose_subject \
+                        or dic['remain_student'] <= 0 \
+                        or dic['subject'] == 0 \
+                        or check_condition(i, chose_block, chose_subject, track): continue
+                else:
+                    chose_subject.append(dic['subject'])
+                    chose_block.append(i)
+                    dic['remain_student'] -= 1
+                    track = set_track(chose_block, chose_subject, track)
+                    break
+            if len(chose_subject) >= nob:
+                break
+
+        if len(chose_subject) < nob - 1:
+            return False, n
+        elif len(chose_subject) == nob - 1:
+            for _ in range(track):
+                chose_subject.append(0)
+        students.append(student(chose_subject))
+
+    utill.print_remain_block(remain_block)
+    return True, students
 
 
 def pick(re_sub, nosj, nosd, nob, student):
@@ -7,50 +45,14 @@ def pick(re_sub, nosj, nosd, nob, student):
     try_count = 0
     while True:
         try_count += 1
-        flag = True
-        students = []
-        re_sub_copyed = copy.deepcopy(re_sub)
-        for n in range(nosd):
-            chose_subject = []
-            chose_block = []  # 블럭을 고려해줘야 구조적으로 불가능한 시간표가 나오지 않음, 다만 배정시 고려는 x
-            s = [i for i in range(1, nosj)]  # s는 과목 번호
-            random.shuffle(s)
-            for i in s:
-                for j in re_sub_copyed[i].keys():
-                    if re_sub_copyed[i][j][0] in chose_block or re_sub_copyed[i][j][1] <= 0 or check_overlab_research(i): continue
-                    else:
-                        chose_subject.append(i)
-                        chose_block.append(re_sub_copyed[i][j][0])
-                        chose_block = utill.add_overlap_block(re_sub_copyed[i][j][0], chose_block)
-                        re_sub_copyed[i][j][1] -= 1
-                        break
-                if len(chose_subject) >= nob:
-                    break
-
-            if len(chose_subject) < nob - 1:
-                if n >= 100:
-                    print(str(try_count) + '번째 시도: ' + str(n) + '번째 학생 실패')
-                    print(chose_block)
-                    print(utill.label_sub(chose_subject))
-                    utill.print_remain_sub(re_sub_copyed)
-                    #print(len(chose_subject))
-                    utill.print_remain_block(re_sub_copyed)
-                    print('=' * 100)
-                    time.sleep(5)
-                flag = False
-                # return n
-                break
-            elif len(chose_subject) == nob - 1:
-                chose_subject.append(0)
-            students.append(student(chose_subject))
-            if not flag:
-                break
+        flag, result = pick_onetime(re_sub, nosj, nosd, nob, student)
         if flag:
-            break
-    return students, try_count
+            return result, try_count
+        else:
+            print('%d번째 시도 : %d번째 학생 실패' %(try_count, result))
 
 
-def check_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
+def confirm_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
     result = [0] * nosj
     for s in stu:
         for j in s.subject:
@@ -58,7 +60,7 @@ def check_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
     return result
 
 
-def check_pick_time(re_sub, nosj, nosd, nob, student, n):
+def measure_pick_time(re_sub, nosj, nosd, nob, student, n):
     avr = 0
     for i in range(n):
         ign, t = pick(re_sub, nosj, nosd, nob, student)
@@ -66,27 +68,71 @@ def check_pick_time(re_sub, nosj, nosd, nob, student, n):
     return avr / n
 
 
-def limit_track(r_b):
+def check_track(b, track, chose_block, chose_sub):  # 트랙에 걸리면 True, 아니면 False
+    chose_b = copy.deepcopy(chose_block)
+    research_list = [i for i in range(31, 37)]
+    for s in chose_sub:
+        if s in research_list:
+            try: del(chose_b[chose_sub.index(s)])
+            except:
+                print(chose_b)
+                print(chose_sub)
+            break
+    if track == 1:
+        if b in [1, 2, 3, 4, 5, 6, 7, 8]: return True
+    elif track == 2:
+        if b in [9, 10, 11, 12, 13]: return True
+    # if (10 in chose_b or 12 in chose_b) and b in [11, 13]:  # 10, 12블럭과 11, 13블럭은 트랙 문제로 인해 같이 못 들어감
+    #     return True
+    # if (11 in chose_b or 13 in chose_b) and b in [10,12]:
+    #     return True
+    if 7 in chose_b and b == 8:
+        return True
+    if 8 in chose_b and b == 7:
+        return True
+    return False
+
+
+def set_track(chose_bloc, chose_sub, track):  # 트랙 정보를 주어 공강 2블럭 가능케하기, track 넘어가면 멈추기, 과연 배제, 7-3블럭 막기
     unit_4 = [1, 2, 3, 4, 5, 6, 7, 8]
     unit_2 = [9, 10, 11, 12, 13]
-    count_4, count_2 = 0, 0
-    result = set(r_b)
-    for i in r_b:
-        if i in unit_4:
-            count_4 += 1
-        if i in unit_2:
-            count_2 += 1
-        if count_4 == 7:
-            result.union(set(unit_4))
-        if count_2 == 3:
-            result.union(set(unit_2))
-    return list(result)
+    count_4 = len([i for i in chose_bloc if i in unit_4])
+    count_2 = len([i for i in chose_bloc if i in unit_2])
 
-def check_overlab_research(b): # 과제연구가 있을시 True, 과제연구 중복 고려
     research_list = [i for i in range(31, 37)]
-    if b in research_list: return True
-    else: return False
+    if [i for i in chose_sub if i in research_list]: count_2 -= 1  # 과제연구는 track 2단위 고려 제외
 
+    if count_4 == 7 and count_2 == 3 and track == 0:
+        raise Exception('트랙 오류')
+    elif count_2 == 3:
+        track = 2
+    elif count_4 == 7:
+        track = 1
+    else:
+        track = 0
+    return track
+
+
+def check_overlab_research(b, chose_subject): # 과제연구가 있을시 True, 과제연구 중복 고려
+    research_list = [i for i in range(31, 37)]
+    if b in research_list:
+        if [i for i in chose_subject if i in research_list]:
+            return True
+    return False
+
+
+def check_overlap_block(b, chose_b):
+    if b == 7:
+        if 10 in chose_b or 12 in chose_b: return True
+    elif (b == 10 or b == 12) and 7 in chose_b: return True
+    elif b == 8:
+        if 11 in chose_b or 13 in chose_b: return True
+    elif (b == 11 or b == 13) and 8 in chose_b: return True
+    return False
+
+
+def check_condition(b, chose_b, chose_subject, track):
+    return check_overlap_block(b, chose_b) + check_overlab_research(b, chose_subject) + check_track(b, track, chose_b, chose_subject)
 
 if __name__ == '__main__':
     SPC = utill.SPC   # student per class, 분반당 학생수, 현재는 21로 고정
@@ -102,4 +148,4 @@ if __name__ == '__main__':
     if input('저장하시겠습니까? (Y/N)') == 'Y':
         utill.save_file('students.txt', temp)
 
-    print(check_pick(temp, NOSJ))
+    print(confirm_pick(temp, NOSJ))

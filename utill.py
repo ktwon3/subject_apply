@@ -6,18 +6,20 @@ def set_remain_subject():
     with open("subject_block.txt", "r") as f:
         sub_block = f.read().splitlines()  # subject_block : 한 과목이 어떤 블록에 해당되는지 정리
     re_sub = []
-
+    research_list = [i for i in range(31, 37)]
     for i in range(len(sub_block)):
         temp = {}
         nums = sub_block[i].split()  # nums : subject_block의 각각의 숫자 분리
         for j in range(len(nums)):
             if i == 0:
                 temp[j + 1] = [int(nums[j]), NOSD]
+            if i in research_list:
+                temp[j + 1] = [int(nums[j]), 17]
             else:
                 temp[j + 1] = [int(nums[j]), SPC]
         re_sub.append(temp)
 
-    #  re_sub[0] = {5: [4, 200], 6: [5, 400]}  # 공강 조정, 어떻게 조정해야 할지 더 찾아봐야 함
+
     return re_sub
 
 
@@ -79,8 +81,7 @@ def set_remain_block(rs):
     return dic
 
 
-def print_remain_block(rs):
-    rb = set_remain_block(rs)
+def print_remain_block(rb):
     print('=' * 10 + 'remain_block' + '=' * 10)
     for block in rb.keys():
         print('%d블럭' % block)

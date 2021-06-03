@@ -16,7 +16,7 @@ def apply(remain_sub, stud, nosd, nob, time=30):
             if len(chose_block) == nob:
                 continue
             for i in c_b:
-                chose_block = utill.add_overlap_block(i, c_b)
+                    chose_block = utill.add_overlap_block(i, c_b)
 
             ran = random.randrange(len(stud[num].subject))
             sub = stud[num].subject[ran]
@@ -78,10 +78,10 @@ def frm_print(block_num, time, remain_subject, students):
     r = find_repeating_max(block_num, time, remain_subject, students)
     print('최댓값 :', r['num'][0])
     for i in r['max']:
-        print(str(i) + '학생 :', students[i].print_sub())
-    print('최솟밗 :', r['num'][1])
+        print(str(i) + '학생 :', students[i].return_sub())
+    print('최솟값 :', r['num'][1])
     for i in r['min']:
-        print(str(i) + '학생 :', students[i].print_sub())
+        print(str(i) + '학생 :', students[i].return_sub())
 
 
 if __name__ == '__main__':
@@ -97,8 +97,8 @@ if __name__ == '__main__':
 
     result = apply(remain_subject, students, NOSD, NOB, 100)
     checked_dic = check_applying_result(result, NOB)
-    # print(checked_dic)
-    # print(result)
+    print(checked_dic)
+    print(result)
 
     # print(repeat_find_block_student(9,100))
     frm_print(9, 10, remain_subject, students)
