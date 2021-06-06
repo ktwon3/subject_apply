@@ -7,19 +7,20 @@ def set_remain_subject():
         sub_block = f.read().splitlines()  # subject_block : 한 과목이 어떤 블록에 해당되는지 정리
     re_sub = []
     research_list = [i for i in range(31, 37)]
+    necessary_list = [20,39]
     for i in range(len(sub_block)):
         temp = {}
-        nums = sub_block[i].split()  # nums : subject_block의 각각의 숫자 분리
+        nums = sub_block[i].split()  # nums : subject_block 각각의 숫자 분리
         for j in range(len(nums)):
             if i == 0:
                 temp[j + 1] = [int(nums[j]), NOSD]
             if i in research_list:
-                temp[j + 1] = [int(nums[j]), 17]
+                temp[j + 1] = [int(nums[j]), 13]
+            if i in necessary_list:
+                temp[j + 1] = [int(nums[j]), 26]
             else:
                 temp[j + 1] = [int(nums[j]), SPC]
         re_sub.append(temp)
-
-
     return re_sub
 
 
@@ -52,8 +53,9 @@ def label_sub(sub_list):
     for s in raw:
         for i in s.split('\t'):
             num = int(i.split('.')[0])
-            try : compare_dic[num] = i.split('.')[1].strip()
-            except:
+            try:
+                compare_dic[num] = i.split('.')[1].strip()
+            except Exception:
                 print(i)
                 raise Exception(IndexError)
 
@@ -64,16 +66,17 @@ def label_sub(sub_list):
 
 
 def print_remain_sub(rs):
-    l = [i for i in range(len(rs))]
-    d = label_sub(l)
+    list_ = [i for i in range(len(rs))]
+    d = label_sub(list_)
     for i in range(len(rs)):
         for j in rs[i].values():
             print(d[i], str(j[0]) + '블럭', str(j[1]) + '명')
 
 
-def set_remain_block(rs):
+def set_remain_block(rs, necessary_sub):
     dic = {i: [] for i in range(1, 14)}  # 13 : 총 블록 수
-    for subject_count in range(len(rs)):
+    rs_order = necessary_sub + [i for i in range(len(rs)) if i not in necessary_sub]
+    for subject_count in rs_order:
         for class_num in rs[subject_count].keys():
             block_num, remain_student = rs[subject_count][class_num][0], rs[subject_count][class_num][1]
             dic[block_num].append({'subject': subject_count, 'class_num': class_num, 'remain_student': remain_student})
@@ -88,7 +91,7 @@ def print_remain_block(rb):
         for sub_dic in rb[block]:
             temp = label_sub([sub_dic['subject']])
             subject = temp[sub_dic['subject']]
-            print(subject, end = '  ')
+            print(subject, end='  ')
             print(str(sub_dic['class_num']) + '반  ' + str(sub_dic['remain_student']) + '명')
         print('\n')
 

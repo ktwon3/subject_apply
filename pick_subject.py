@@ -2,10 +2,10 @@ import copy, random
 import student_class, utill
 
 
-def pick_onetime(re_sub, nosj, nosd, nob, student):
+def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
     students = []
     re_sub_copyed = copy.deepcopy(re_sub)
-    remain_block = utill.set_remain_block(re_sub_copyed)
+    remain_block = utill.set_remain_block(re_sub_copyed, necessary_sub)
     for n in range(nosd):
         track = 0  # 0 : track 미정 1 : 4단위 7블럭 2 : 2단위 3블럭
         chose_subject = []
@@ -15,11 +15,14 @@ def pick_onetime(re_sub, nosj, nosd, nob, student):
         for i in b:
 
             random.shuffle(remain_block[i])
+            remain_block[i] = sort_necessary(remain_block[i], necessary_sub)
+
             for dic in remain_block[i]:
                 if dic['subject'] in chose_subject \
                         or dic['remain_student'] <= 0 \
                         or dic['subject'] == 0 \
-                        or check_condition(i, chose_block, chose_subject, track): continue
+                        or check_condition(i, chose_block, chose_subject, track, dic['subject']): continue
+
                 else:
                     chose_subject.append(dic['subject'])
                     chose_block.append(i)
@@ -29,15 +32,26 @@ def pick_onetime(re_sub, nosj, nosd, nob, student):
             if len(chose_subject) >= nob:
                 break
 
-        if len(chose_subject) < nob - 1:
+        if len(chose_subject) < nob - 1 \
+                or len([i for i in chose_subject if i in necessary_sub]) != len(necessary_sub):
             return False, n
         elif len(chose_subject) == nob - 1:
-            for _ in range(track):
-                chose_subject.append(0)
+            chose_subject.append(0)
         students.append(student(chose_subject))
 
     utill.print_remain_block(remain_block)
     return True, students
+
+
+def sort_necessary(dic_list, necessary_list):  # 필수 과목이 앞쪽에 오도록 정렬
+    result = []
+    for dic in dic_list:
+        if dic['subject'] in necessary_list:
+            result.append(dic)
+    others = [i for i in dic_list if i not in result]
+    result += others
+    return result
+
 
 
 def pick(re_sub, nosj, nosd, nob, student):
@@ -45,11 +59,12 @@ def pick(re_sub, nosj, nosd, nob, student):
     try_count = 0
     while True:
         try_count += 1
-        flag, result = pick_onetime(re_sub, nosj, nosd, nob, student)
+        flag, result = pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub=[20, 39])
         if flag:
             return result, try_count
         else:
             print('%d번째 시도 : %d번째 학생 실패' %(try_count, result))
+
 
 
 def confirm_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
@@ -113,9 +128,9 @@ def set_track(chose_bloc, chose_sub, track):  # 트랙 정보를 주어 공강 2
     return track
 
 
-def check_overlab_research(b, chose_subject): # 과제연구가 있을시 True, 과제연구 중복 고려
+def check_overlab_research(sub, chose_subject): # 과제연구가 있을시 True, 과제연구 중복 고려
     research_list = [i for i in range(31, 37)]
-    if b in research_list:
+    if sub in research_list:
         if [i for i in chose_subject if i in research_list]:
             return True
     return False
@@ -131,8 +146,9 @@ def check_overlap_block(b, chose_b):
     return False
 
 
-def check_condition(b, chose_b, chose_subject, track):
-    return check_overlap_block(b, chose_b) + check_overlab_research(b, chose_subject) + check_track(b, track, chose_b, chose_subject)
+def check_condition(b, chose_b, chose_subject, track, sub):
+    return check_overlap_block(b, chose_b) + check_overlab_research(sub, chose_subject) + check_track(b, track, chose_b, chose_subject)
+
 
 if __name__ == '__main__':
     SPC = utill.SPC   # student per class, 분반당 학생수, 현재는 21로 고정
@@ -148,4 +164,7 @@ if __name__ == '__main__':
     if input('저장하시겠습니까? (Y/N)') == 'Y':
         utill.save_file('students.txt', temp)
 
-    print(confirm_pick(temp, NOSJ))
+
+
+    for i in temp:
+        print(utill.label_sub(i.return_sub()))
