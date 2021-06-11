@@ -56,12 +56,12 @@ def apply(stud, nosd, nob, time=30, fix=False):
     return result_
 
 
-def check_applying_result(a, nob):  # apply 이후 신청 성공한 블럭 블럭 몇갠지 return
+def check_applying_result(resul, nob):  # apply 이후 신청 성공한 블럭 블럭 몇갠지 return
     b = {}
     for i in range(nob + 1):
         b[i] = 0
-    for i in range(len(a)):
-        b[len(a[i].keys())] += 1
+    for i in range(len(resul)):
+        b[len(resul[i].keys())] += 1
     return b
 
 

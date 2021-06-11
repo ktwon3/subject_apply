@@ -4,6 +4,8 @@ Student : 인스턴스에 각각의 선호 시간표를 가지고 있음
 self.subject : 인스턴스 학생이 들을 과목들을 순서에 상관 없이 리스트에 저장
 return_sub() : self.subject에 무엇이 들어있는지 알아보기 위한 메소드 (디버깅 용도)
 set_apply_order() : 학생의 선호시간표를 작성하기 위한 메소드
+간략 설명 : 과제연구 우선 고정, 이후 랜덤으로 과목 골라 고정, 이후 랜덤으로 배치
+
 self.count_fixed : 고정 과목 수 (반드시 그 시간에 들어야 하는 과목 수)
 self.ideal_subject : 학생의 이상적인, 즉 선호 시간표
 apply()와 check_result() : 디버깅 용도 self.fix_same는 apply() 이후 몇개의 고정과목 수강신청을 성공했는지 저장
@@ -117,10 +119,36 @@ return : False -> 중복 x True -> 중복
 apply_subject.py : 3차 수강신청 구현
 
 apply : 3차 수강신청을 해주는 함수
+
 전체 알고리즘
 1. 학생 순서를 섞음
 2. 수강 신청 완료가 안 된 사람 중에서 차례로 한명씩 뽑아옴
 3. 블록 중복 고려
 4. applied_sub_list에서 이미 신청한 과목 받아옴
-5-1 선호 시간표대로 신청 가능할 때 : 블록 중복이 없고 사람이 없으면 선호 시간표에 맞춰 신청
-5-2 과목 랜덤 선정 -> 
+5-1 선호 시간표대로 신청 가능할 때 : 블록 중복이 없고 사람이 안 꽉 찼으면 선호 시간표에 맞춰 신청
+5-2 불가능 : 남은 과목 랜덤 선택 -> 분반 리스트에서 블록 중복이 있거나 사람이 꽉 찼으면 삭제 -> 남은 분반중 하나 골라 리스트에 추가
+6. 1~5단계를 time번 반복
+
+parameter >> stud : Student 객체 리스트, nosd, nob, time : 1~5단계 반복할 횟수, fix : 고정 과목이 있으면 (신청 가능하면) True
+return >> result_ : [{블럭 : [과목, 분반], 블럭 : [과목, 분반] ... }, {...}, ...]
+ex) result_ = [{4 : [1,1], 2 : [20,2]}, ...] 이면 첫번째 학생은 4번째 블럭의 1번과목 1분반, 2번째 블럭의 20번과목 2분반 신청 완료
+
+check_applying_result : apply 이후 신청 성공한 블럭 몇갠지 return (디버깅 용도)
+parameter >> resul : apply의 결과, nob
+return >> {..., 6: 0, 7: 2, 8: 35, 9: 89, 10: 78} 6블럭 성공 0명, 7블럭 성공 2명, 8블록 성공 35명, 9블록 성공 89명, 10블록 성공 78명
+
+find_block_student : check_applying_result의 key 하나 출력 (디버깅 용도)
+parameter >> resul : apply의 결과, bloc_num : 가져올 key
+return >> bloc_num개의 블록 신청 성공한 사람
+
+repeat_find_block_student : find_block_student를 반복 (디버깅 용도)
+parameter >> bloc_num : 몇개의 블록으로 조사할건지, time : 반복 횟수, students : Student 객체 리스트, fix=False : 고정과목 유무
+return >> r : 각 인덱스의 학생이 얼마나 bloc_num개의 블록만 수강신청 했는지
+
+find_repeating_max : repeat_find_block_student에서 최소와 최대 찾는 함수 (디버깅 용도)
+parameter >> bloc_num, time, students, fix=False (전부 위와 동일)
+return >> result : key가 'max'와 'min'이고 value가 각각 최대 학생, 최소 학생
+
+frm_print : find_repeating_max를 보기 좋게 출력 (디버깅 용도)
+parameter >> find_repeating_max와 동일
+return >> x (출력 형태)
