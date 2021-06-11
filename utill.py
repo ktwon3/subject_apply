@@ -24,6 +24,36 @@ def set_remain_subject():
     return re_sub
 
 
+def print_remain_sub(rs):
+    list_ = [i for i in range(len(rs))]
+    d = label_sub(list_)
+    for i in range(len(rs)):
+        for j in rs[i].values():
+            print(d[i], str(j[0]) + '블럭', str(j[1]) + '명')
+
+
+def set_remain_block(rs, necessary_sub):
+    dic = {i: [] for i in range(1, 14)}  # 13 : 총 블록 수
+    rs_order = necessary_sub + [i for i in range(len(rs)) if i not in necessary_sub]
+    for subject_count in rs_order:
+        for class_num in rs[subject_count].keys():
+            block_num, remain_student = rs[subject_count][class_num][0], rs[subject_count][class_num][1]
+            dic[block_num].append({'subject': subject_count, 'class_num': class_num, 'remain_student': remain_student})
+    return dic
+
+
+def print_remain_block(rb):
+    print('=' * 10 + 'remain_block' + '=' * 10)
+    for block in rb.keys():
+        print('%d블럭' % block)
+        for sub_dic in rb[block]:
+            temp = label_sub([sub_dic['subject']])
+            subject = temp[sub_dic['subject']]
+            print(subject, end='  ')
+            print(str(sub_dic['class_num']) + '반  ' + str(sub_dic['remain_student']) + '명')
+        print('\n')
+
+
 def save_file(file_name, data):
     with open(file_name, 'wb') as f:
         pickle.dump(data, f)
@@ -65,35 +95,7 @@ def label_sub(sub_list):
     return return_dic
 
 
-def print_remain_sub(rs):
-    list_ = [i for i in range(len(rs))]
-    d = label_sub(list_)
-    for i in range(len(rs)):
-        for j in rs[i].values():
-            print(d[i], str(j[0]) + '블럭', str(j[1]) + '명')
 
-
-def set_remain_block(rs, necessary_sub):
-    dic = {i: [] for i in range(1, 14)}  # 13 : 총 블록 수
-    rs_order = necessary_sub + [i for i in range(len(rs)) if i not in necessary_sub]
-    for subject_count in rs_order:
-        for class_num in rs[subject_count].keys():
-            block_num, remain_student = rs[subject_count][class_num][0], rs[subject_count][class_num][1]
-            dic[block_num].append({'subject': subject_count, 'class_num': class_num, 'remain_student': remain_student})
-
-    return dic
-
-
-def print_remain_block(rb):
-    print('=' * 10 + 'remain_block' + '=' * 10)
-    for block in rb.keys():
-        print('%d블럭' % block)
-        for sub_dic in rb[block]:
-            temp = label_sub([sub_dic['subject']])
-            subject = temp[sub_dic['subject']]
-            print(subject, end='  ')
-            print(str(sub_dic['class_num']) + '반  ' + str(sub_dic['remain_student']) + '명')
-        print('\n')
 
 
 SPC = 24  # student per class, 분반당 학생수, 현재는 24로 고정

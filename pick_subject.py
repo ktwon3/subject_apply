@@ -4,7 +4,7 @@ import student_class, utill
 
 def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
     students = []
-    re_sub_copyed = copy.deepcopy(re_sub)
+    re_sub_copyed = copy.deepcopy(re_sub)  # 원인은 잘 모르겠지만 deepcopy를 해야 오류가 안 남
     remain_block = utill.set_remain_block(re_sub_copyed, necessary_sub)
     for n in range(nosd):
         track = 0  # 0 : track 미정 1 : 4단위 7블럭 2 : 2단위 3블럭
@@ -12,8 +12,8 @@ def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
         chose_block = []  # 블럭을 고려해줘야 구조적으로 불가능한 시간표가 나오지 않음, 다만 배정시 고려는 x
         b = [i for i in range(1, 14)]  # b는 블록 번호
         random.shuffle(b)
-        for i in b:
 
+        for i in b:
             random.shuffle(remain_block[i])
             remain_block[i] = sort_necessary(remain_block[i], necessary_sub)
 
@@ -40,18 +40,8 @@ def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
         students.append(student(chose_subject))
 
     utill.print_remain_block(remain_block)
+    print(remain_block)
     return True, students
-
-
-def sort_necessary(dic_list, necessary_list):  # 필수 과목이 앞쪽에 오도록 정렬
-    result = []
-    for dic in dic_list:
-        if dic['subject'] in necessary_list:
-            result.append(dic)
-    others = [i for i in dic_list if i not in result]
-    result += others
-    return result
-
 
 
 def pick(re_sub, nosj, nosd, nob, student):
@@ -66,6 +56,15 @@ def pick(re_sub, nosj, nosd, nob, student):
             print('%d번째 시도 : %d번째 학생 실패' %(try_count, result))
 
 
+def sort_necessary(dic_list, necessary_list):  # 필수 과목이 앞쪽에 오도록 정렬
+    result = []
+    for dic in dic_list:
+        if dic['subject'] in necessary_list:
+            result.append(dic)
+    others = [i for i in dic_list if i not in result]
+    result += others
+    return result
+
 
 def confirm_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
     result = [0] * nosj
@@ -76,11 +75,35 @@ def confirm_pick(stu, nosj):  # 각 과목 신청자수 리스트로 반환
 
 
 def measure_pick_time(re_sub, nosj, nosd, nob, student, n):
-    avr = 0
+    sum_ = 0
     for i in range(n):
         ign, t = pick(re_sub, nosj, nosd, nob, student)
-        avr += t
-    return avr / n
+        sum_ += t
+    return sum_ / n
+
+
+def set_track(chose_bloc, chose_sub, track):  # 트랙 정보를 주어 공강 2블럭 가능케하기, track 넘어가면 멈추기, 과연 배제, 7-3블럭 막기
+    unit_4 = [1, 2, 3, 4, 5, 6, 7, 8]
+    unit_2 = [9, 10, 11, 12, 13]
+    count_4 = len([i for i in chose_bloc if i in unit_4])
+    count_2 = len([i for i in chose_bloc if i in unit_2])
+
+    research_list = [i for i in range(31, 37)]
+    if [i for i in chose_sub if i in research_list]: count_2 -= 1  # 과제연구는 track 2단위 고려 제외
+
+    if count_4 == 7 and count_2 == 3 and track == 0:
+        raise Exception('트랙 오류')
+    elif count_2 == 3:
+        track = 2
+    elif count_4 == 7:
+        track = 1
+    else:
+        track = 0
+    return track
+
+
+def check_condition(b, chose_b, chose_subject, track, sub):
+    return check_overlap_block(b, chose_b) + check_overlab_research(sub, chose_subject) + check_track(b, track, chose_b, chose_subject)
 
 
 def check_track(b, track, chose_block, chose_sub):  # 트랙에 걸리면 True, 아니면 False
@@ -108,26 +131,6 @@ def check_track(b, track, chose_block, chose_sub):  # 트랙에 걸리면 True, 
     return False
 
 
-def set_track(chose_bloc, chose_sub, track):  # 트랙 정보를 주어 공강 2블럭 가능케하기, track 넘어가면 멈추기, 과연 배제, 7-3블럭 막기
-    unit_4 = [1, 2, 3, 4, 5, 6, 7, 8]
-    unit_2 = [9, 10, 11, 12, 13]
-    count_4 = len([i for i in chose_bloc if i in unit_4])
-    count_2 = len([i for i in chose_bloc if i in unit_2])
-
-    research_list = [i for i in range(31, 37)]
-    if [i for i in chose_sub if i in research_list]: count_2 -= 1  # 과제연구는 track 2단위 고려 제외
-
-    if count_4 == 7 and count_2 == 3 and track == 0:
-        raise Exception('트랙 오류')
-    elif count_2 == 3:
-        track = 2
-    elif count_4 == 7:
-        track = 1
-    else:
-        track = 0
-    return track
-
-
 def check_overlab_research(sub, chose_subject): # 과제연구가 있을시 True, 과제연구 중복 고려
     research_list = [i for i in range(31, 37)]
     if sub in research_list:
@@ -146,8 +149,7 @@ def check_overlap_block(b, chose_b):
     return False
 
 
-def check_condition(b, chose_b, chose_subject, track, sub):
-    return check_overlap_block(b, chose_b) + check_overlab_research(sub, chose_subject) + check_track(b, track, chose_b, chose_subject)
+
 
 
 if __name__ == '__main__':
@@ -165,6 +167,6 @@ if __name__ == '__main__':
         utill.save_file('students.txt', temp)
 
 
-
     for i in temp:
-        print(utill.label_sub(i.return_sub()))
+        print(i.subject)
+        # print(utill.label_sub(i.return_sub()))

@@ -1,4 +1,4 @@
-업데이트 : 6/10
+업데이트 : 6/11
 1. student_class.py : Student 클래스를 담당하는 파일
 Student : 인스턴스에 각각의 선호 시간표를 가지고 있음
 self.subject : 인스턴스 학생이 들을 과목들을 순서에 상관 없이 리스트에 저장
@@ -83,5 +83,44 @@ sort_necessary : pick_onetime의 2단계 '필수과목 앞으로 가져오기'�
 parameter >> dic_list : remain_block의 특정 블럭의 딕셔너리를 모아놓은 리스트 (remain_block[i]), necessary_list : 필수과목 번호리스트
 return >> result : 필수과목을 앞으로 가져온 리스트
 
-confirm_pick :
+confirm_pick : 각 과목 신청자수 리스트로 반환
+parameter >> stu : Student의 객체 리스트, nosj : Number Of SubJect
+return >> result : [2,5,10] 이면 0번 과목 2명, 1번 과목 5명, 2번 과목 10명 신청했단 뜻
 
+measure_pick_time : pick()이 몇번만에 끝나는지 평균
+parameter >> resub : remain_subject, nosj, nosd, nob, student : class, n : pick()을 몇번해서 평균낼건지
+return : sum_/n : 평균값
+
+set_track : 과목 리스트의 트랙을 정하는 함수
+실제 트랙과 동일하게 적용, 물론 공강과 과제연구는 트랙 고려에서 제외 (자세한건 연구노트)
+parameter >> chose_bloc : chose_block, chose_sub : chose_sub, track
+return >> track
+
+check_condition : 4단계 조건의 3,4,5 (블록 중복에 안 걸리는가? 과제연구는 1개 이하인가? track에 위배되진 않는가?) 체크
+parameter >> b : 현재 신청할 블럭, chose_b : chose_block (신청한 블록), chose_subject : 신청한 과목, track, sub : 신청할 과목
+return >> False -> 신청 가능 True -> 신청 불가능
+
+check_track: 트랙 위배 체크
+parameter >> b, track, chose_block, chose_sub (check_condition과 동일)
+return : False -> 위배x True -> 위배
+
+check_overlab_research : 과제연구 중복 체크
+parameter >> sub, chose_subject (check_condition과 동일)
+return : False -> 중복 x True -> 중복
+
+check_overlap_block() : 블록 중복 체크 (8,11,13//7,10,12)
+parameter >> b, chose_b (check_condition과 동일)
+return : False -> 중복 x True -> 중복
+
+
+
+apply_subject.py : 3차 수강신청 구현
+
+apply : 3차 수강신청을 해주는 함수
+전체 알고리즘
+1. 학생 순서를 섞음
+2. 수강 신청 완료가 안 된 사람 중에서 차례로 한명씩 뽑아옴
+3. 블록 중복 고려
+4. applied_sub_list에서 이미 신청한 과목 받아옴
+5-1 선호 시간표대로 신청 가능할 때 : 블록 중복이 없고 사람이 없으면 선호 시간표에 맞춰 신청
+5-2 과목 랜덤 선정 -> 
