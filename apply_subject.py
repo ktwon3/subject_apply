@@ -2,12 +2,7 @@ import random
 import copy
 import utill
 import pickle
-
-SPC = utill.SPC  # student per class, 분반당 학생수, 현재는 21로 고정
-NOSD = utill.NOSD  # Number Of StuDent, 총 학생수
-NOB = utill.NOB  # Number Of Block, 블럭 개수
-NOSJ = utill.NOSJ  # Number Of SubeJct, 공강을 합친 과목 수
-
+from basic_var import SPC, NOSD, NOB, NOSJ
 
 def apply(stud, nosd, nob, time=30, fix=False):
     re_sub = utill.set_remain_subject()

@@ -1,6 +1,6 @@
 import copy, random
 import student_class, utill
-
+from basic_var import SPC, NOSD, NOB, NOSJ
 
 def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
     students = []
@@ -165,7 +165,6 @@ if __name__ == '__main__':
     temp, _ = pick(r, NOSJ, NOSD, NOB, student_class.Student)
     if input('저장하시겠습니까? (Y/N)') == 'Y':
         utill.save_file('students.txt', temp)
-
 
     for i in temp:
         print(i.subject)

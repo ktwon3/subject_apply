@@ -1,6 +1,6 @@
 import apply_subject, utill
 import random
-
+from basic_var import SPC, NOSD, NOB, NOSJ
 
 class Student:
     def __init__(self, subject):
@@ -98,7 +98,10 @@ if __name__ == "__main__":
     print(sum_)
 
 
-    apply_subject.frm_print(10, 10, students, True)
+    #apply_subject.frm_print(10, 10, students, True)
+    result = apply_subject.apply(students, NOSD, NOB, 30, True)
+    print(result)
+
 
 
 
