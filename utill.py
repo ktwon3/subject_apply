@@ -1,5 +1,4 @@
 import pickle
-import copy
 from basic_var import SPC, NOSD, NOB, NOSJ
 
 def set_remain_subject():
@@ -59,18 +58,20 @@ def save_file(file_name, data):
         pickle.dump(data, f)
 
 
-def add_overlap_block(b, cb):
-    chose_b = copy.deepcopy(cb)
-    if b == 7:
-        if 10 not in chose_b: chose_b.append(10)
-        if 12 not in chose_b: chose_b.append(12)
-    elif (b == 10 or b == 12) and 7 not in chose_b:
-        chose_b.append(7)
-    elif b == 8:
-        if 11 not in chose_b: chose_b.append(11)
-        if 13 not in chose_b: chose_b.append(13)
-    elif (b == 11 or b == 13) and 8 not in chose_b:
-        chose_b.append(8)
+def add_overlap_block(chose_b):
+    for b in chose_b:
+        if b == 7:
+            if 10 not in chose_b: chose_b.append(10)
+            elif 12 not in chose_b: chose_b.append(12)
+        elif (b == 10 or b == 12):
+            if 7 not in chose_b:
+                chose_b.append(7)
+        elif b == 8:
+            if 11 not in chose_b: chose_b.append(11)
+            elif 13 not in chose_b: chose_b.append(13)
+        elif (b == 11 or b == 13):
+            if 8 not in chose_b:
+                chose_b.append(8)
     return chose_b
 
 
