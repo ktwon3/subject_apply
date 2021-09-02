@@ -9,7 +9,7 @@ def apply(stud, nosd, nob, time=30, fix=False):
     result_ = [{} for _ in range(nosd)]
 
     for _ in range(time):  # 1차에서는 time = 30으로도 충분한 것 같음
-        random.shuffle(students_num)
+        # random.shuffle(students_num)
         for num in students_num:
             chose_block = list(result_[num].keys())
             if len(chose_block) == nob:
@@ -17,21 +17,35 @@ def apply(stud, nosd, nob, time=30, fix=False):
             chose_block = utill.add_overlap_block(chose_block)
             applied_sub_list = [result_[num][i][0] for i in result_[num].keys()]
             if fix:
-                ideal_sub_list = stud[num].ideal_subject.keys()
-                sub_list = [i for i in ideal_sub_list if i not in applied_sub_list]
-                sub = sub_list[0]
-                class_ = stud[num].ideal_subject[sub]
-                if re_sub[sub][class_][0] in chose_block \
+                try:
+                    ideal_sub_list = stud[num].ideal_subject.keys()
+                    sub_list = [i for i in ideal_sub_list if i not in applied_sub_list]
+                    sub = sub_list[0]
+                    class_ = stud[num].ideal_subject[sub]
+                    if re_sub[sub][class_][0] in chose_block \
                         or re_sub[sub][class_][1] <= 0:
-                    fix = False
-                    continue
+                        fix = False
+                        continue
+                except:
+                    sub_list = [i for i in stud[num].subject if i not in applied_sub_list]
+                    sub = sub_list[0]
+                    class_list = list(re_sub[sub].keys())
+                    for i in class_list:
+                        if re_sub[sub][i][0] in chose_block \
+                                or re_sub[sub][i][1] <= 0:
+                            class_list.remove(i)
+                        
+                        if len(class_list) == 0:
+                            fix = False
+                            continue
+                    
+                
                 result_[num][re_sub[sub][class_][0]] = [sub, class_]  # {블럭 : [과목, 분반]}, 각 인덱스는 학생
                 re_sub[sub][class_][1] -= 1
 
             else:
                 sub_list = [i for i in stud[num].subject if i not in applied_sub_list]
-                ran = random.randrange(len(sub_list))
-                sub = sub_list[ran]
+                sub = random.choice(sub_list)
 
                 class_list = list(re_sub[sub].keys())  # 분반 리스트
 
@@ -115,4 +129,4 @@ if __name__ == '__main__':
         print(utill.label_sub(sub))
 
     # print(repeat_find_block_student(9,100))
-    frm_print(9, 10, students)
+    frm_print(10, 100, students)

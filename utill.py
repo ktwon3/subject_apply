@@ -59,20 +59,33 @@ def save_file(file_name, data):
 
 
 def add_overlap_block(chose_b):
+    """a = chose_b[:]
+    new_list = []
     for b in chose_b:
         if b == 7:
-            if 10 not in chose_b: chose_b.append(10)
-            elif 12 not in chose_b: chose_b.append(12)
+            if 10 not in chose_b: new_list.append(10)
+            if 12 not in chose_b: new_list.append(12)
         elif (b == 10 or b == 12):
-            if 7 not in chose_b:
-                chose_b.append(7)
+            if 7 not in (new_list + chose_b):
+                new_list.append(7)
         elif b == 8:
-            if 11 not in chose_b: chose_b.append(11)
-            elif 13 not in chose_b: chose_b.append(13)
+            if 11 not in chose_b: new_list.append(11)
+            if 13 not in chose_b: new_list.append(13)
         elif (b == 11 or b == 13):
-            if 8 not in chose_b:
-                chose_b.append(8)
-    return chose_b
+            if 8 not in (new_list + chose_b):
+                new_list.append(8)
+    chose_b += new_list
+    if len(chose_b) > len(set(chose_b)):
+        print(a)
+        print(chose_b)
+        raise Exception('error')
+    return chose_b"""
+    chose_set = set(chose_b)
+    if chose_set & {7,10,12}:
+        chose_set = chose_set | {7,10,12}
+    if chose_set & {8,11,13}:
+        chose_set = chose_set | {8,11,13}
+    return list(chose_set)
 
 
 def label_sub(sub_list):

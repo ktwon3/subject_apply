@@ -39,8 +39,7 @@ def pick_onetime(re_sub, nosj, nosd, nob, student, necessary_sub):
             chose_subject.append(0)
         students.append(student(chose_subject))
 
-    utill.print_remain_block(remain_block)
-    print(remain_block)
+    print(students)
     return True, students
 
 

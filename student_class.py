@@ -5,6 +5,9 @@ from basic_var import SPC, NOSD, NOB, NOSJ
 class Student:
     def __init__(self, subject):
         self.subject = subject
+       
+    def __repr__(self):
+        return '<Student subject: ' + str(self.subject) + '>\n'
 
     def return_sub(self):
         return self.subject
